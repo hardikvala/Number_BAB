@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Select the After Number</title>
+  <style>
+    body {
+      background-color: #e3f2fd;
+      font-family: 'Comic Sans MS', cursive;
+      text-align: center;
+      padding: 40px;
+    }
+    .question {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    .options button {
+      background-color: #fff176;
+      border: none;
+      margin: 10px;
+      padding: 15px 30px;
+      font-size: 24px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .feedback {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+    .score-screen {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Select the After Number</h2>
+  <div class="game">
+    <div class="question" id="question">Question</div>
+    <div class="options">
+      <button onclick="checkAnswer(this)"></button>
+      <button onclick="checkAnswer(this)"></button>
+      <button onclick="checkAnswer(this)"></button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="score-screen" id="scoreScreen">
+    <h2>🎉 Game Over!</h2>
+    <p>Your Score: <span id="finalScore"></span>/10</p>
+    <button onclick="location.href='index.html'">🏠 Main Menu</button>
+  </div>
+  <script>
+    const type = 'after';
+    let round = 0;
+    let score = 0;
+
+    function generateQuestion() {
+      const num = Math.floor(Math.random() * 89) + 10;
+      let correct, options = [];
+
+      if (type === 'before') {
+        correct = num - 1;
+        options = [correct, correct + 1, correct + 2];
+      } else if (type === 'after') {
+        correct = num + 1;
+        options = [correct, correct - 1, correct + 2];
+      } else {
+        correct = num + 1;
+        options = [correct, correct - 1, correct + 1];
+      }
+
+      options = options.sort(() => 0.5 - Math.random());
+
+      const qText = type === 'before' ? `What comes before ${num}?` :
+                    type === 'after' ? `What comes after ${num}?` :
+                    `What comes between ${num} and ${num + 2}?`;
+
+      document.getElementById('question').innerText = qText;
+      const btns = document.querySelectorAll('.options button');
+      btns.forEach((btn, i) => {
+        btn.innerText = options[i];
+        btn.dataset.correct = options[i] == correct;
+      });
+    }
+
+    function checkAnswer(btn) {
+      const feedback = document.getElementById('feedback');
+      if (btn.dataset.correct === 'true') {
+        feedback.innerText = '🎉 Yay, you are right!';
+        score++;
+      } else {
+        feedback.innerText = '❌ Oops! Please try again.';
+      }
+      round++;
+      if (round < 10) {
+        setTimeout(() => {
+          feedback.innerText = '';
+          generateQuestion();
+        }, 1000);
+      } else {
+        document.querySelector('.game').style.display = 'none';
+        document.getElementById('scoreScreen').style.display = 'block';
+        document.getElementById('finalScore').innerText = score;
+      }
+    }
+
+    generateQuestion();
+  </script>
+</body>
+</html>
